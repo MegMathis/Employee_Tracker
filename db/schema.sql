@@ -31,14 +31,6 @@ CREATE TABLE employees (
     FOREIGN KEY (role_id) REFERENCES roles (role_id)
 );
 
-INSERT INTO departments (department_name) VALUES ("Sales");
-INSERT INTO roles (job_title, salary, department_id) VALUES ("Sales_Associate", 45000, 1);
-INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("Mitch", "Toub", 1, 3);
-
-SELECT * FROM roles;
-SELECT * FROM employees;
-SELECT * FROM departments;
-
 
 
 
