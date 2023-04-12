@@ -10,17 +10,6 @@ const connection = mysql.createConnection({
   database: "companyEmployee_db",
 });
 
-// establish connection to data base.  If connection works, log "connect"
-// threadID -> used to keep track of the conenction to the DB
-// function showEmployees() {
-//   const sql = `
-//   SELECT
-//     employees.name as employee_name,
-//     role_type
-//     FROM employees
-//     JOIN roles ON employees.role_id = roles.id`;
-// }
-
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected");
@@ -236,3 +225,5 @@ function quit() {
   connection.end();
   process.exit();
 }
+
+showMenu();
