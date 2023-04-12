@@ -10,29 +10,57 @@ const connection = mysql.createConnection({
 });
 
 // main menu options
-const mainMenu = [
-  {
-    type: "list",
-    name: "options",
-    message: "What would you like to do?",
-    choices: [
-      "View All Employees",
-      "Add Employee",
-      "Update Employee Role",
-      "View All Roles",
-      "Add Role",
-      "View All Departments",
-      "Add Department",
-      "Exit",
-    ],
-  },
-];
+function showMenu() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "options",
+        message: "What would you like to do?",
+        choices: [
+          "View All Employees",
+          "Add Employee",
+          "Update Employee Role",
+          "View All Roles",
+          "Add Role",
+          "View All Departments",
+          "Add Department",
+          "Exit",
+        ],
+      },
+    ])
+    .then(function (result) {
+      console.log("You entered: " + result.options);
 
-// function to inititialize
-function init() {
-  inquirer.prompt(mainMenu).then(function (input) {
-    console.log("works");
-  });
+      switch (result.options) {
+        case "View All Employees":
+          viewEmployees();
+          break;
+        case "Add Employee":
+          addEmployee();
+          break;
+        case "Update Employee Role":
+          updateEmployeeRole();
+          break;
+        case "View All Roles":
+          viewAllRoles();
+          break;
+        case "Add Role":
+          addRole();
+          break;
+        case "View All Departments":
+          viewAllDepartments();
+          break;
+        case "Add Department":
+          addDepartment();
+          break;
+        case "Exit":
+          console.log(
+            "Thank you for viewing the Employee Tracker.  Have a nice day!"
+          );
+          process.exit();
+      }
+    });
 }
 
 // view all departments
