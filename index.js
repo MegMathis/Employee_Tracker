@@ -69,7 +69,7 @@ function showMenu() {
     });
 }
 
-// here goes the functions
+// the functions
 // view all departments
 function viewAllDepartments() {
   // database
@@ -83,7 +83,8 @@ function viewAllDepartments() {
 
 // view all roles
 function viewAllRoles() {
-  let query = "SELECT * FROM roles";
+  let query =
+    "SELECT * FROM roles JOIN departments ON roles.departments = departments.department_id";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -93,7 +94,8 @@ function viewAllRoles() {
 
 // view all employees
 function viewEmployees() {
-  let query = "SELECT * FROM employees";
+  let query =
+    "SELECT employees.first_name, employees.last_name, roles.job_title, departments.department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.role_id LEFT JOIN departments ON roles.department_id = departments.dept_id LEFT JOIN employees manager ON manager.manager_id = employees.employee_id";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -111,18 +113,19 @@ function addDepartment() {
     })
     .then(function (answer) {
       connection.query(
-        "INSERT INTO department (name) VALUES(?)",
+        "INSERT INTO departments (department_name) VALUES(?)",
         [answer.deptName],
         function (err, res) {
           if (err) throw err;
           console.table(res);
+          console.log("Added new department");
           showMenu();
         }
       );
     });
 }
 
-// add role - role name, salary, and dept_id
+// add role - role name, salary, and dept
 function addRole() {
   inquirer
     .prompt([
@@ -157,41 +160,73 @@ function addRole() {
 
 // add employee
 function addEmployee() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "eFirstName",
-        message: "What is the employee's first name?",
-      },
-      {
-        type: "input",
-        name: "eLastName",
-        message: "What is the employee's last name?",
-      },
-      {
-        type: "input",
-        name: "eRole",
-        message: "What is the role of the employee?",
-      },
-      {
-        type: "input",
-        name: "eManager",
-        message: "Who is the employee's manager?",
-      },
-    ])
-    .then(function (answer) {
-      connection.query(
-        "INSERT INTO employees (first_name, last_name, role_id, manager_id VALUES (? ? ? ?)"[
-          (answer.eFirstName, answer.eLastName, answer.eRole, answer.eManager)
-        ],
-        function (err, res) {
-          if (err) throw err;
-          console.table(res);
-          showMenu();
-        }
-      );
+  let query = "SELECT * FROM roles";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    const roleChoices = res.map(({ role_id, job_title }) => {
+      return {
+        name: job_title,
+        value: role_id,
+      };
     });
+    const managerChoices = res.map(({ manager_id, first_name, last_name }) => {
+      return {
+        name: manager_id,
+        value: first_name,
+        last_name,
+      };
+    });
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "eFirstName",
+          message: "What is the employee's first name?",
+        },
+        {
+          type: "input",
+          name: "eLastName",
+          message: "What is the employee's last name?",
+        },
+        {
+          type: "list",
+          name: "eRole",
+          message: "What is the role of the employee?",
+          choices: roleChoices,
+        },
+        {
+          type: "confirm",
+          name: "haveManagerOrNo",
+          message: "Does this employee have a manager?",
+          default: true,
+        },
+        {
+          type: "list",
+          name: "eManager",
+          when: function (answers) {
+            return answers.haveManagerOrNo === true;
+          },
+          message: "Who is the employee's manager?",
+          choices: managerChoices,
+        },
+      ])
+      .then(function (answer) {
+        connection.query(
+          "INSERT INTO employees (first_name, last_name, role_id, manager_id VALUES (? ? ? ?)",
+          [
+            (answer.eFirstName,
+            answer.eLastName,
+            answer.eRole,
+            answer.eManager),
+          ],
+          function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            showMenu();
+          }
+        );
+      });
+  });
 }
 // update employees role
 function updateEmployeeRole() {
