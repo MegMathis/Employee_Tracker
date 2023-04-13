@@ -24,13 +24,13 @@ function showMenu() {
         name: "options",
         message: "What would you like to do?",
         choices: [
+          "View All Departments",
+          "View All Roles",
           "View All Employees",
+          "Add Department",
+          "Add Role",
           "Add Employee",
           "Update Employee Role",
-          "View All Roles",
-          "Add Role",
-          "View All Departments",
-          "Add Department",
           "Exit",
         ],
       },
@@ -39,26 +39,26 @@ function showMenu() {
       console.log("You entered: " + result.options);
 
       switch (result.options) {
+        case "View All Departments":
+          viewAllDepartments();
+          break;
+        case "View All Roles":
+          viewAllRoles();
+          break;
         case "View All Employees":
           viewEmployees();
+          break;
+        case "Add Department":
+          addDepartment();
+          break;
+        case "Add Role":
+          addRole();
           break;
         case "Add Employee":
           addEmployee();
           break;
         case "Update Employee Role":
           updateEmployeeRole();
-          break;
-        case "View All Roles":
-          viewAllRoles();
-          break;
-        case "Add Role":
-          addRole();
-          break;
-        case "View All Departments":
-          viewAllDepartments();
-          break;
-        case "Add Department":
-          addDepartment();
           break;
         case "Exit":
           console.log(
@@ -83,8 +83,9 @@ function viewAllDepartments() {
 
 // view all roles
 function viewAllRoles() {
-  let query =
-    "SELECT * FROM roles JOIN departments ON roles.departments = departments.department_id";
+  let query = `SELECT r.role_id, r.job_title, d.department_name, r.salary
+  FROM roles r
+  INNER JOIN departments d ON r.department_id = d.dept_id`;
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -94,8 +95,14 @@ function viewAllRoles() {
 
 // view all employees
 function viewEmployees() {
-  let query =
-    "SELECT employees.first_name, employees.last_name, roles.job_title, departments.department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.role_id LEFT JOIN departments ON roles.department_id = departments.dept_id LEFT JOIN employees manager ON manager.manager_id = employees.employee_id";
+  let query = `SELECT employees.employee_id, employees.first_name, employees.last_name,
+    roles.job_title, roles.salary, departments.department_name,
+    CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+    FROM employees
+    LEFT JOIN roles ON employees.role_id = roles.role_id
+    LEFT JOIN departments ON roles.department_id = departments.dept_id
+    LEFT JOIN employees manager ON manager.employee_id = employees.manager_id`;
+
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
