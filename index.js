@@ -281,8 +281,8 @@ function updateEmployeeRole() {
         ])
         .then(function (answer) {
           connection.query(
-            "UPDATE employees SET role_id=? WHERE first_name = ?, last_name = ?",
-            [answer.update, answer.updateRole],
+            "UPDATE employees SET role_id=? WHERE employee_id=?",
+            [answer.updateRole, answer.update],
             function (err, res) {
               if (err) throw err;
               console.table(res);

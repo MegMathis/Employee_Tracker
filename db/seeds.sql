@@ -12,7 +12,7 @@ INSERT INTO roles (job_title, salary, department_id) VALUES
     ("Controller", 105000, 2),
     ("Accounts Payable", 55000, 2),
     ("Client Support Lead", 65000, 3),
-    ("Customer Support Agenet", 45000, 3),
+    ("Customer Support Agent", 45000, 3),
     ("Technical Service Manager", 140000, 4),
     ("Software Engineer", 105000, 4);
 
