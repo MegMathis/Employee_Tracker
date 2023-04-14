@@ -4,7 +4,8 @@ INSERT INTO departments (department_name) VALUES
     ("Sales"),
     ("Finance"),
     ("Customer Service"),
-    ("Engineering");
+    ("Engineering"),
+    ("Executive");
 
 INSERT INTO roles (job_title, salary, department_id) VALUES
     ("Sales Manager", 95000, 1),
@@ -14,7 +15,8 @@ INSERT INTO roles (job_title, salary, department_id) VALUES
     ("Client Support Lead", 65000, 3),
     ("Customer Support Agent", 45000, 3),
     ("Technical Service Manager", 140000, 4),
-    ("Software Engineer", 105000, 4);
+    ("Software Engineer", 105000, 4),
+    ("President", 250000, 5);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES   
     ("Melissa", "Badowski", 1, NULL),
