@@ -254,32 +254,43 @@ function updateEmployeeRole() {
         value: id,
       };
     });
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "eUpdate",
-          message: "Which employee would you like to update?",
-          choices: updateEmpChoice,
-        },
-        {
-          type: "list",
-          name: "updateRole",
-          message: "What role would you like to update the employee with?",
-          choices: updateEmpRoleChoice,
-        },
-      ])
-      .then(function (answer) {
-        connection.query(
-          "UPDATE employee SET role_id=? WHERE first_name = ?",
-          [update.eUpdate, answer.updateRole],
-          function (err, res) {
-            if (err) throw err;
-            console.table(res);
-            showMenu();
-          }
-        );
+    // Second query to get roles
+    let query = "SELECT * FROM roles";
+    connection.query(query, function (err, res) {
+      if (err) throw err;
+      const updateEmpRoleChoice = res.map(({ role_id, job_title }) => {
+        return {
+          name: job_title,
+          value: role_id,
+        };
       });
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "update",
+            message: "Which employee would you like to update?",
+            choices: updateEmpChoice,
+          },
+          {
+            type: "list",
+            name: "updateRole",
+            message: "What role would you like to update the employee with?",
+            choices: updateEmpRoleChoice,
+          },
+        ])
+        .then(function (answer) {
+          connection.query(
+            "UPDATE employees SET role_id=? WHERE first_name = ?, last_name = ?",
+            [answer.update, answer.updateRole],
+            function (err, res) {
+              if (err) throw err;
+              console.table(res);
+              showMenu();
+            }
+          );
+        });
+    });
   });
 }
 
