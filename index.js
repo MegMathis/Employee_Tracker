@@ -220,6 +220,76 @@ function addRole() {
 }
 
 // add employee
+// function addEmployee() {
+//   let query = "SELECT * FROM roles";
+//   connection.query(query, function (err, res) {
+//     if (err) throw err;
+//     const roleChoices = res.map(({ role_id, job_title }) => {
+//       return {
+//         name: job_title,
+//         value: role_id,
+//       };
+//     });
+//     const managerChoices = res.map(({ manager_id, first_name, last_name }) => {
+//       return {
+//         name: first_name,
+//         last_name,
+//         value: manager_id,
+//       };
+//     });
+//     inquirer
+//       .prompt([
+//         {
+//           type: "input",
+//           name: "eFirstName",
+//           message: "What is the employee's first name?",
+//         },
+//         {
+//           type: "input",
+//           name: "eLastName",
+//           message: "What is the employee's last name?",
+//         },
+//         {
+//           type: "list",
+//           name: "eRole",
+//           message: "What is the role of the employee?",
+//           choices: roleChoices,
+//         },
+//         {
+//           type: "confirm",
+//           name: "haveManagerOrNo",
+//           message: "Does this employee have a manager?",
+//           default: true,
+//         },
+//         {
+//           type: "list",
+//           name: "eManager",
+//           when: function (answers) {
+//             return answers.haveManagerOrNo === true;
+//           },
+//           message: "Who is the employee's manager?",
+//           choices: managerChoices,
+//         },
+//       ])
+//       .then(function (answer) {
+//         connection.query(
+//           "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
+//           [
+//             (answer.eFirstName,
+//             answer.eLastName,
+//             answer.eRole,
+//             answer.eManager),
+//           ],
+//           function (err, res) {
+//             if (err) throw err;
+//             console.table(res);
+//             showMenu();
+//           }
+//         );
+//       });
+//   });
+// }
+
 function addEmployee() {
   let query = "SELECT * FROM roles";
   connection.query(query, function (err, res) {
@@ -230,65 +300,61 @@ function addEmployee() {
         value: role_id,
       };
     });
-    const managerChoices = res.map(({ manager_id, first_name, last_name }) => {
-      return {
-        name: first_name,
-        last_name,
-        value: manager_id,
-      };
-    });
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "eFirstName",
-          message: "What is the employee's first name?",
-        },
-        {
-          type: "input",
-          name: "eLastName",
-          message: "What is the employee's last name?",
-        },
-        {
-          type: "list",
-          name: "eRole",
-          message: "What is the role of the employee?",
-          choices: roleChoices,
-        },
-        {
-          type: "confirm",
-          name: "haveManagerOrNo",
-          message: "Does this employee have a manager?",
-          default: true,
-        },
-        {
-          type: "list",
-          name: "eManager",
-          when: function (answers) {
-            return answers.haveManagerOrNo === true;
-          },
-          message: "Who is the employee's manager?",
-          choices: managerChoices,
-        },
-      ])
-      .then(function (answer) {
-        connection.query(
-          "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
-          [
-            (answer.eFirstName,
-            answer.eLastName,
-            answer.eRole,
-            answer.eManager),
-          ],
-          function (err, res) {
-            if (err) throw err;
-            console.table(res);
-            showMenu();
-          }
-        );
+    // Second query to get Manager names - ASKBCS
+    let query = "SELECT * FROM employees";
+    connection.query(query, function (err, res) {
+      if (err) throw err;
+      const managerChoices = res.map(({ id, first_name, last_name }) => {
+        return {
+          name: `${first_name} ${last_name}`,
+          value: id,
+        };
       });
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "firstName",
+            message: "What is the employee's first name?",
+          },
+          {
+            type: "input",
+            name: "lastName",
+            message: "What is the employee's last name?",
+          },
+          {
+            type: "list",
+            name: "roleId",
+            message: "What is the employee's role?",
+            choices: roleChoices,
+          },
+          {
+            type: "list",
+            name: "managerId",
+            message: "Who is the employee's manager?",
+            choices: managerChoices,
+          },
+        ])
+        .then(function (answer) {
+          connection.query(
+            "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+            [
+              answer.firstName,
+              answer.lastName,
+              answer.roleId,
+              answer.managerId,
+            ],
+            function (err, res) {
+              if (err) throw err;
+              console.table(res);
+              showMenu();
+            }
+          );
+        });
+    });
   });
 }
+
 // update employees role
 function updateEmployeeRole() {
   inquirer
